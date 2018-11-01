@@ -39,89 +39,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Lua RTOS main start
+ * Lua RTOS, Lua event module
  *
  */
 
-#include <sys/features.h>
+/*
+ * This module implements basic event driven mechanism for sync threads.
+ */
 
-#include "luartos.h"
+#ifndef GLOBAL_EVENT_H
+#define	GLOBAL_EVENT_H
+
+#include "lua.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
-#include "global_event.h"
+#include "freertos/queue.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
+#include <sys/mutex.h>
+#include <sys/list.h>
 
-#include <sys/debug.h>
-#include <sys/panic.h>
-#include <sys/mount.h>
+typedef struct {
+	uint8_t eventid; // define event ID, for example 0001 is rfid event; 0002 is pwm event
+	char message[8];     // put 8 byte for message  
+} global_event_t;
 
-#include <drivers/gpio.h>
+xQueueHandle globaleventQueue;
+xQueueHandle gRemoteeventQueue;
+void PostGlobalEventToLua(global_event_t event);
+void PostRemoteEventToLua(global_event_t event);
+int CreateGlobalEvent();
 
-#include <pthread.h>
 
-void luaos_main();
-void _sys_init();
-
-pthread_t lua_thread;
-
-#include <stdio.h>
-
-void *lua_start(void *arg) {
-	for(;;) {
-		luaos_main();
-	}
-
-	return NULL;
-}
-
-void app_main() {
-	_sys_init();
-
-	#if (CONFIG_LUA_RTOS_LED_ACT >= 0)
-	driver_lock(SYSTEM_DRIVER, 0, GPIO_DRIVER, CONFIG_LUA_RTOS_LED_ACT, DRIVER_ALL_FLAGS, "Activity LED");
-
-	// Init leds
-	gpio_pin_output(CONFIG_LUA_RTOS_LED_ACT);
-	gpio_pin_clr(CONFIG_LUA_RTOS_LED_ACT);
-	#endif
-
-	// Create and run a pthread for the Lua interpreter
-	pthread_attr_t attr;
-	struct sched_param sched;
-	int res;
-	CreateGlobalEvent();
-	//gatts_setup();
-	debug_free_mem_begin(lua_main_thread);
-
-	// Init thread attributes
-	pthread_attr_init(&attr);
-
-	// Set stack size
-	pthread_attr_setstacksize(&attr, CONFIG_LUA_RTOS_LUA_STACK_SIZE);
-
-	// Set priority
-	sched.sched_priority = CONFIG_LUA_RTOS_LUA_TASK_PRIORITY;
-	pthread_attr_setschedparam(&attr, &sched);
-
-	// Set CPU
-	cpu_set_t cpu_set = CPU_INITIALIZER;
-
-	CPU_SET(CONFIG_LUA_RTOS_LUA_TASK_CPU, &cpu_set);
-
-	pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpu_set);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-	// Create thread
-	res = pthread_create(&lua_thread, &attr, lua_start, NULL);
-	if (res) {
-		panic("Cannot start lua");
-	}
-
-	pthread_setname_np(lua_thread, "lua_main");
-	debug_free_mem_end(lua_main_thread, NULL);
-}
+#endif	/* GLOBAL_EVENT_H */

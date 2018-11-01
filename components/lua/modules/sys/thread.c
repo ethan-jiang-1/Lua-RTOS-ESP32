@@ -55,6 +55,7 @@
 #include "ldo.h"
 #include "thread.h"
 #include "error.h"
+#include "global_event.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -742,6 +743,76 @@ static int lthread_status(lua_State* L) {
 
 	return 0;
 }
+//move gloabel event to thread fiel
+static int lglobalevent_post(lua_State* L )
+{
+	static int counter=0;
+	printf("lglobalevent_post\r\n");
+	global_event_t sendEvent;
+	counter++;
+	sendEvent.eventid=counter;
+	strcpy(sendEvent.message,"aab");
+	xQueueSend(globaleventQueue, &sendEvent, portMAX_DELAY);
+	return 0;
+}
+
+static int lglobalevent_wait(lua_State* L )
+{
+	printf("lglobalevent_wait\r\n");
+    global_event_t recEvent;
+	xQueueReceive(globaleventQueue, &recEvent, portMAX_DELAY);
+	lua_pushinteger (L,recEvent.eventid);
+	lua_pushstring(L,(char *)recEvent.message);
+	return 2;
+}
+
+static int lremoteevent_post(lua_State* L )
+{
+	uint8_t return_value=0;
+	printf("lremoteevent_post\r\n");
+	global_event_t sendEvent;
+	sendEvent.eventid=luaL_checkinteger( L, 1 );
+	const char * arg= luaL_checkstring( L, 2 );
+	if (strlen(arg)<8)
+	{
+		strcpy(sendEvent.message,arg);
+		xQueueSend(gRemoteeventQueue, &sendEvent, portMAX_DELAY);
+	}
+	else
+		return_value=8; // it means msg buffer overflow
+	lua_pushinteger (L,return_value);
+	return 1;
+}
+
+static int lremoteevent_wait(lua_State* L )
+{
+	printf("lglobalevent_wait\r\n");
+    global_event_t recEvent;
+	xQueueReceive(gRemoteeventQueue, &recEvent, portMAX_DELAY);
+	lua_pushinteger (L,recEvent.eventid);
+	lua_pushstring(L,(char *)recEvent.message);
+	return 2;
+}
+
+
+
+void PostGlobalEventToLua(global_event_t event)
+{
+	printf("PostGlobalEventToLua\r\n");
+	xQueueSend(globaleventQueue, &event, portMAX_DELAY);
+}
+void PostRemoteEventToLua(global_event_t event)
+{
+	printf("PostRemoteEventToLua\r\n");
+	xQueueSend(gRemoteeventQueue, &event, portMAX_DELAY);
+}
+int CreateGlobalEvent()
+{
+	printf("CreateGlobalEvent\r\n");
+	globaleventQueue = xQueueCreate(10, sizeof(global_event_t));
+	gRemoteeventQueue = xQueueCreate(2, sizeof(global_event_t));
+	return 0;
+}
 
 #include "modules.h"
 
@@ -759,6 +830,11 @@ static const LUA_REG_TYPE thread[] = {
     { LSTRKEY( "sleepms"     ),			LFUNCVAL( lthread_sleepms       ) },
     { LSTRKEY( "sleepus"     ),			LFUNCVAL( lthread_sleepus       ) },
     { LSTRKEY( "usleep"      ),			LFUNCVAL( lthread_sleepus       ) },
+	
+	{ LSTRKEY( "WaitOnGlobalEvent"   ), LFUNCVAL( lglobalevent_wait       ) },
+	{ LSTRKEY( "PostGlobalEvent"   ),   LFUNCVAL( lglobalevent_post       ) },
+	{ LSTRKEY( "WaitOnRemoteEvent"   ), LFUNCVAL( lremoteevent_wait       ) },
+	{ LSTRKEY( "PostRemoteEvent"   ),   LFUNCVAL( lremoteevent_post       ) },
 
     { LSTRKEY( "Lock"    		    ),	LINTVAL( PTHREAD_MUTEX_NORMAL    ) },
     { LSTRKEY( "RecursiveLock"      ),	LINTVAL( PTHREAD_MUTEX_RECURSIVE ) },
