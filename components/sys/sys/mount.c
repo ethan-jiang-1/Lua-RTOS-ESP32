@@ -66,6 +66,7 @@ void _mount_init() {
 	mtx_init(&mtx, NULL, NULL, MTX_RECURSE);
 }
 
+extern int mount_window(const char* mountpoint);
 // Current mount points
 struct mount_pt mountps[] = {
 #if (CONFIG_SD_CARD_MMC || CONFIG_SD_CARD_SPI) && CONFIG_LUA_RTOS_USE_FAT
@@ -83,6 +84,7 @@ struct mount_pt mountps[] = {
 #if CONFIG_LUA_RTOS_USE_SPIFFS
    {NULL, "spiffs", &vfs_spiffs_mount, &vfs_spiffs_umount, &vfs_spiffs_format, 0},
 #endif
+    {NULL, "window", &mount_window, NULL, NULL, 0},
     {"/dev", "dev", NULL, NULL, NULL, 0},
     {NULL, NULL, NULL, NULL, NULL, 0}
 };
