@@ -3,7 +3,9 @@
 # project subdirectory.
 #
 
-EXTRA_COMPONENT_DIRS := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/components/lua/modules $(IDF_PATH)/../pluto
+EXTRA_COMPONENT_DIRS := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/components/lua/modules
+EXTRA_COMPONENT_DIRS += $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/../pluto
+$(info $(EXTRA_COMPONENT_DIRS))
 
 BOARD_TYPE_REQUIRED := 1
 VERSION_CHECK_REQUIRED := 1
