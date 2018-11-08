@@ -5,8 +5,7 @@
 --_thread = require('_thread')
 --urandom = require('urandom')
 
-cjson = require('cjson')
-json = cjson.new()
+cjson = require("cjson")
 
 
 
@@ -78,7 +77,7 @@ local function window1_py()
 				msg = lvgl.read(fa, 80)
 				if msg ~= nil then
 					print(tostring(msg))
-					jmsg = json:decode(msg)
+					jmsg = cjson.decode(msg)
 					obj = jmsg['value']
 					if obj == 'bt1' then
 						x = math.random(0, 190)
