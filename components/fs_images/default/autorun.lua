@@ -13,7 +13,7 @@ cjson = require("cjson")
 print("")
 print("mount windows in vfd ...")
 fs.mount("/window", "window")
-fs.mount("/app", "fat")
+fs.mount("/data", "fat")
 
 
 
@@ -111,7 +111,7 @@ local function window2_py()
                "ypos" :  0,
                "width" : 240,
                "height" : 240,
-               "src" : "water00.zip",
+               "src" : "/data/water00.zip",
                "length" : 6
            }
          ]
