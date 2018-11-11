@@ -34,7 +34,7 @@ local function window1_py()
                  "ypos" : 0,
                  "width" : 240,
                  "height" : 240,
-                 "res": 0
+                 "src": "/data/water00.zip"
              },
              {
                  "type" : "button",
@@ -43,7 +43,7 @@ local function window1_py()
                  "ypos" : 100,
                  "width" : 50,
                  "height" : 50,
-                 "res" : 1
+                 "res" : 0
              }
            ]
           }
@@ -62,7 +62,7 @@ local function window1_py()
         window_config02 = [[
             "width" : 50,
             "height" : 50,
-            "res" : 1
+            "res" : 0
            }
          ]
         }
@@ -73,10 +73,8 @@ local function window1_py()
 			lvgl.write(fa, localwindow_config, string.len(localwindow_config))
 			for j = 1, 1000, 1 do
 				thread.sleepms(1000)
-				print("task a")
 				msg = lvgl.read(fa, 80)
 				if msg ~= nil then
-					print(tostring(msg))
 					jmsg = cjson.decode(msg)
 					obj = jmsg['value']
 					if obj == 'bt1' then
@@ -121,9 +119,7 @@ local function window2_py()
         --utime.sleep_ms(10000)
         thread.sleepms(10000)
         fb = lvgl.open("/window/create")
-        print('BBBBB'..tostring(fb))
         if fb > 0 then 
-          print(tostring(window_config2))	
           lvgl.write(fb, window_config2, string.len(window_config2))
 	  print("task b")
           --utime.sleep_ms(20000)
