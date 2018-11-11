@@ -22,7 +22,6 @@ local function window1_py()
 
     --for i in range(1000):
     for i = 1, 1000, 1 do 
-        print("task a "..tostring(i))
         local localwindow_config = [[
         {
            "action": "create",
@@ -97,7 +96,7 @@ end
 
 local function window2_py()
     for k = 1, 1000, 1 do 
-        print("task b "..tostring(k))
+        --print("task b "..tostring(k))
         window_config2 = [[
         {
          "action": "create",
@@ -121,7 +120,7 @@ local function window2_py()
         fb = lvgl.open("/window/create")
         if fb > 0 then 
           lvgl.write(fb, window_config2, string.len(window_config2))
-	  print("task b")
+	  --print("task b")
           --utime.sleep_ms(20000)
           thread.sleepms(20000)
           lvgl.close(fb)
