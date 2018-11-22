@@ -1469,6 +1469,10 @@ menu "Lua RTOS"
             config LUA_RTOS_LUA_USE_LVGL
                bool "Include lvgl module in build"
                default y
+
+            config LUA_RTOS_LUA_USE_MSGQ
+               bool "Include msgq module in build"
+               default y
                
             config LUA_RTOS_LUA_USE_ULP
                bool "Include ULP (Ultra Low Power coprocessor) module in build"
