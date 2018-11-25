@@ -14,6 +14,7 @@ print("")
 print("mount windows in vfd ...")
 fs.mount("/window", "window")
 fs.mount("/data", "fat")
+fs.mount("/sys", "sys")
 
 
 
@@ -133,5 +134,20 @@ end
 --_thread.start_new_thread("window1_py", window1_py, ())
 --_thread.start_new_thread("window2_py", window2_py, ())
 
+function fw_update_test()
+    fw_update_config = [[
+    {
+        "fwpath" : "/data/lua_rtos.bin",
+        "fwcrc"  : "12344",
+        "fspath" : "/data/spiffs_image.img",
+        "fscrc"  : "12344",
+    }
+    ]]
+    fs = lvgl.open("/sys/fwupgrade")
+    if fs > 0 then
+        lvgl.write(fs, fw_update_config, string.len(fw_update_config))
+        lvgl.close(fs)
+    end
+end
 thread.start(window1_py)
 thread.start(window2_py)
