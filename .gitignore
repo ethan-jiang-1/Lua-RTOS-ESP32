@@ -3,7 +3,8 @@
 *.pyc
 *.a
 *.d
-
+.board
+env
 # gtags
 GTAGS
 GRTAGS
