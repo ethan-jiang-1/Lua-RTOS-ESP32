@@ -36,7 +36,6 @@
 
 #include "curlver.h"         /* libcurl version defines   */
 #include "system.h"          /* determine things run-time */
-
 /*
  * Define WIN32 when build target is Win32 API
  */
@@ -154,6 +153,12 @@ typedef enum {
 #define CURLSSLBACKEND_LIBRESSL CURLSSLBACKEND_OPENSSL
 #define CURLSSLBACKEND_BORINGSSL CURLSSLBACKEND_OPENSSL
 #define CURLSSLBACKEND_CYASSL CURLSSLBACKEND_WOLFSSL
+
+#    define CURL_TYPEOF_CURL_OFF_T     long long
+#    define CURL_FORMAT_CURL_OFF_T     "lld"
+#    define CURL_FORMAT_CURL_OFF_TU    "llu"
+#    define CURL_SUFFIX_CURL_OFF_T     LL
+#    define CURL_SUFFIX_CURL_OFF_TU    ULL
 
 struct curl_httppost {
   struct curl_httppost *next;       /* next entry in the list */
