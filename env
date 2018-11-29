@@ -5,7 +5,7 @@ if [[ "$OS" == "Linux" ]]; then
 else
     export PATH=$PATH:$CURRENT_PATH/../xtensa-esp32-elf/bin
 fi 
-
+export LUA_RTOS_PATH=$CURRENT_PATH
 export IDF_PATH=$CURRENT_PATH/../esp-idf
 export LIBRARY_PATH="/usr/local/opt/gettext/lib:$LIBRARY_PATH";
 export PKG_CONFIG_PATH="/usr/local/opt/ncurses/lib/pkgconfig:$PKG_CONFIG_PATH"
