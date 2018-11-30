@@ -117,6 +117,7 @@ fs: fs-$(FS_TYPE)
 
 # Flash the file system
 flashfs: fs
+	@echo $(info Flasing $(shell basename $(FS_ROOT_PATH)) $(FS_TYPE) file system)
 	$(info Flasing $(shell basename $(FS_ROOT_PATH)) $(FS_TYPE) file system)
 	$(ESPTOOLPY_WRITE_FLASH) $(FS_BASE_ADDR) $(BUILD_DIR_BASE)/$(FS_TYPE)_image.img
 
