@@ -377,17 +377,10 @@ inline int fnmatch(/*const*/ char *pattern, const char *string, int flags) {
 
 static int os_ls (lua_State *L) {
     const char *path = luaL_optstring(L, 1, NULL);
-    char *filename = NULL;
     DIR *dir = NULL;
     struct dirent *ent;
-    char type;
-    char size[9];
     char cpath[PATH_MAX];
-    char tpath[PATH_MAX];
-    char tbuffer[250];
-    struct stat sb;
-    struct tm *tm_info;
-
+    int count = 0;
     // If path is not present (at all or any more) get the current directory as path
     if (!path) {
         if (!getcwd(cpath, PATH_MAX)) {
@@ -403,40 +396,24 @@ static int os_ls (lua_State *L) {
         return luaL_fileresult(L, 0, path);
     }
 
-    // Read entries
     while ((ent = readdir(dir)) != NULL) {
-        strcpy(tpath, path);
-        strcat(tpath,"/");
-        strcat(tpath,ent->d_name);
-        tbuffer[0] = '\0';
+       count++; 
+    }
 
-        if (stat(tpath, &sb) == 0) {
-            if (sb.st_atime > 0) {
-                tm_info = localtime(&sb.st_atime);
-                strftime(tbuffer, 250, "%c", tm_info);
-            } else {
-                strcpy(tbuffer, "                        ");
-            }
-        } else {
-            strcpy(tbuffer, "                        ");
-        }
-
-        type = 'd';
-        if (ent->d_type == DT_REG) {
-            type = 'f';
-            snprintf(size, sizeof(size),"%8d", ent->d_fsize);
-        } else {
-            strcpy(size, "       -");
-        }
-
-        if (filename==NULL || 0==strcmp(filename, ent->d_name) || 0==fnmatch(filename, ent->d_name, 0)) { //our implementation above does support only a subset
-            printf("%c\t%s\t%s\t%s\n", type, size, tbuffer, ent->d_name);
-        }
+    lua_createtable(L, count, 0);
+    rewinddir(dir);
+    // Read entries
+    count = 0;
+    while ((ent = readdir(dir)) != NULL) {
+        lua_pushinteger(L, count);
+        lua_pushstring(L, ent->d_name);
+        lua_settable(L, -3);
+        count++;
     }
 
     closedir(dir);
 
-    return 0;
+    return 1;
 }
  
 static int os_clear (lua_State *L) {
