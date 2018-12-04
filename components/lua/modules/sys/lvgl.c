@@ -62,10 +62,9 @@ static int l_open(lua_State *L) {
 
 
     int fd = open(path, O_RDWR);
-
-    if (fd < 0) {
-        	return luaL_error(L, "lvgl path is invalid");
-    }
+    // if (fd < 0) {
+    //     	return luaL_error(L, "lvgl path is invalid");
+    // }
 
     lua_pushinteger(L, fd);
     return 1;

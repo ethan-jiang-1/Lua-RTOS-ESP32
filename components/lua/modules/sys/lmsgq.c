@@ -23,9 +23,9 @@ static int l_open(lua_State *L) {
 
     int fd = open(path, O_RDWR);
 
-    if (fd < 0) {
-        	return luaL_error(L, "msgq path is invalid");
-    }
+    // if (fd < 0) {
+    //     	return luaL_error(L, "msgq path is invalid");
+    // }
 
     ESP_LOGD(TAG, "open %s fd: %d", path, fd);
 
@@ -48,15 +48,18 @@ static int l_write(lua_State *L) {
 
     msg_data = malloc(strlen(data) + 1);
     if(!msg_data){
-        return luaL_error(L, "write mem allocate error");
-    }
-    memset((void *)msg_data, 0, strlen(data) + 1);
-    strcpy(msg_data, data);
-    msg.data = msg_data;
-    
-    int ret = write(fd, &msg, strlen(data));
+        // return luaL_error(L, "write mem allocate error");
+        ESP_LOGE(TAG, "allocated mem for write failed");
+        lua_pushinteger(L, 0);
+    }else{
+        memset((void *)msg_data, 0, strlen(data) + 1);
+        strcpy(msg_data, data);
+        msg.data = msg_data;
+        
+        int ret = write(fd, &msg, strlen(data));
 
-    lua_pushinteger(L, ret);
+        lua_pushinteger(L, ret);
+    }
     return 1;
 }
 

@@ -55,6 +55,8 @@
 #include <sys/status.h>
 #include <sys/debug.h>
 
+#define RUN_LUA_TESTS
+
 static int dofile (lua_State *L, const char *name);
 
 extern int threadInited;
