@@ -58,6 +58,10 @@ static int l_write(lua_State *L) {
         
         int ret = write(fd, &msg, strlen(data));
 
+        if(ret == 0){
+            free(msg_data);
+        }
+
         lua_pushinteger(L, ret);
     }
     return 1;
