@@ -2,6 +2,8 @@
 #include "lauxlib.h"
 #include <esp_system.h>
 
+#include "freertos/task.h"
+
 #if CONFIG_LUA_RTOS_LUA_USE_SYS
 
 static int lget_freemem(lua_State *L) {
@@ -11,12 +13,33 @@ static int lget_freemem(lua_State *L) {
 	return 1;
 }
 
+#if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_STATS_FORMATTING_FUNCTIONS > 0 ) )
+static int lget_taskinfo(lua_State *L) {
+
+	char * pcWriteBuffer = malloc(2048);
+	memset(pcWriteBuffer, 0, 2048);
+
+	vTaskList(pcWriteBuffer);
+	lua_pushstring(L, pcWriteBuffer);
+
+	free(pcWriteBuffer);
+
+	return 1;
+}
+
+#endif
+
+
 
 #include "modules.h"
 
 static const LUA_REG_TYPE sys_map[] =
 {
   { LSTRKEY( "get_freemem" ),      LFUNCVAL( lget_freemem  ) },
+#if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_STATS_FORMATTING_FUNCTIONS > 0 ) )
+  { LSTRKEY( "get_taskinfo" ),      LFUNCVAL( lget_taskinfo  ) },
+#endif
+
   { LNILKEY, LNILVAL }
 };
 
