@@ -1,8 +1,9 @@
 #include "lua.h"
 #include "lauxlib.h"
 #include <esp_system.h>
-
+#include "esp_heap_caps.h"
 #include "freertos/task.h"
+#include "string.h"
 
 #if CONFIG_LUA_RTOS_LUA_USE_SYS
 
@@ -13,16 +14,28 @@ static int lget_freemem(lua_State *L) {
 	return 1;
 }
 
+static int lget_freeiram(lua_State *L){
+	int free_iram = heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+	lua_pushinteger(L, free_iram);
+
+	return 1;
+}
+
 #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_STATS_FORMATTING_FUNCTIONS > 0 ) )
 static int lget_taskinfo(lua_State *L) {
 
 	char * pcWriteBuffer = malloc(2048);
-	memset(pcWriteBuffer, 0, 2048);
 
-	vTaskList(pcWriteBuffer);
-	lua_pushstring(L, pcWriteBuffer);
+	if(pcWriteBuffer != NULL){
+		memset(pcWriteBuffer, 0, 2048);
 
-	free(pcWriteBuffer);
+		vTaskList(pcWriteBuffer);
+		lua_pushstring(L, pcWriteBuffer);
+
+		free(pcWriteBuffer);
+	}else{
+		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -36,6 +49,7 @@ static int lget_taskinfo(lua_State *L) {
 static const LUA_REG_TYPE sys_map[] =
 {
   { LSTRKEY( "get_freemem" ),      LFUNCVAL( lget_freemem  ) },
+  { LSTRKEY( "get_freeiram" ),      LFUNCVAL( lget_freeiram  ) },
 #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_STATS_FORMATTING_FUNCTIONS > 0 ) )
   { LSTRKEY( "get_taskinfo" ),      LFUNCVAL( lget_taskinfo  ) },
 #endif
