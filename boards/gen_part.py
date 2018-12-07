@@ -117,8 +117,13 @@ if with_nvs:
 
 storage_offset = offset
 if storage_partition:    
-  print "storage    0x%08x\t0x%08x  % 5dK" % (offset, int(args.LUA_RTOS_PART_STORAGE_SIZE), int(args.LUA_RTOS_PART_STORAGE_SIZE) / 1024)
+  print "storage_0    0x%08x\t0x%08x  % 5dK" % (offset, int(args.LUA_RTOS_PART_STORAGE_SIZE), int(args.LUA_RTOS_PART_STORAGE_SIZE) / 1024)
   offset = offset + int(args.LUA_RTOS_PART_STORAGE_SIZE)
+
+  if with_ota:  
+    print "storage_1    0x%08x\t0x%08x  % 5dK" % (offset, int(args.LUA_RTOS_PART_STORAGE_SIZE), int(args.LUA_RTOS_PART_STORAGE_SIZE) / 1024)
+    offset = offset + int(args.LUA_RTOS_PART_STORAGE_SIZE)
+
 
 phy_init_offset = offset
 if with_phy_init:
@@ -161,7 +166,10 @@ if storage_partition:
     sys.stderr.write("invalid storage partition subtype")
     exit(1)
 
-  make_part("storage","data",str(storage_subtype),storage_offset,int(args.LUA_RTOS_PART_STORAGE_SIZE))
+  offset = make_part("storage_0","data",str(storage_subtype),storage_offset,int(args.LUA_RTOS_PART_STORAGE_SIZE))
+
+  if with_ota: 
+    make_part("storage_1","data",str(storage_subtype + 4),offset,int(args.LUA_RTOS_PART_STORAGE_SIZE))
 
 if with_phy_init:
   make_part("phy_init","data","phy",phy_init_offset,phy_init_size)

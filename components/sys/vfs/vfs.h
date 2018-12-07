@@ -51,6 +51,7 @@
 #include <sys/mount.h>
 
 #define LUA_RTOS_SPIFFS_PART 0x40
+#define LUA_RTOS_SPIFFS_PART_OFFSET 0x4
 #define LUA_RTOS_LFS_PART 0x41
 
 typedef struct {
