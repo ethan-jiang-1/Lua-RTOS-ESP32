@@ -1298,6 +1298,14 @@ menu "Lua RTOS"
                 If enabled, Lua RTOS use 64 bits to represent integer and real numbers. Enable
                 if you need to work with large integers, or you need more precission when working
                 with real numbers.
+
+         config LUA_ALLOCATION_FROM_SPIRAM_FIRST
+            bool "Try to allocate memories of LUA in SPIRAM firstly. If failed, allocate internal memory"
+            depends on SPIRAM_USE_CAPS_ALLOC || SPIRAM_USE_MALLOC
+            default "n"
+            help
+                Try to allocate memories of WiFi and LWIP in SPIRAM firstly. If failed, try to allocate internal memory then.
+
          endmenu
          
          menu "Lua Modules"
