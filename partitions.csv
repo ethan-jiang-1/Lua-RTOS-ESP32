@@ -1,5 +1,8 @@
 # Lua RTOS Partition Table
 # Name,Type,SubType,Offset,Size
 nvs,data,nvs,0x9000,0x6000
-storage,data,64,0xf000,0x80000
-factory,0,0,0x90000,0x370000
+storage_0,data,64,0xf000,0x50000
+storage_1,data,68,0x5f000,0x50000
+otadata,data,ota,0xaf000,0x2000
+ota_0,0,ota_0,0xc0000,0x1a0000
+ota_1,0,ota_1,0x260000,0x1a0000

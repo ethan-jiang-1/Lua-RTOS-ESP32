@@ -4,4 +4,5 @@ COMPONENT_SRCDIRS := common modules modules/hw modules/net \
 				      
 COMPONENT_ADD_INCLUDEDIRS := common modules modules/hw modules/net \
 						     modules/sys modules/middleware \
-						     modules/bluetooth src
+						     modules/bluetooth src \
+						     ../../../pluto/components/msgq
