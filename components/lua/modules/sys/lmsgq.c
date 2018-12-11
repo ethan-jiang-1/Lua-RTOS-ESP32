@@ -91,7 +91,7 @@ static int l_write(lua_State *L) {
         if(ret == 0){
             free(msg_data);
         }
-
+        
         lua_pushinteger(L, ret);
     }
     return 1;
@@ -136,37 +136,6 @@ static int f_gc (lua_State *L) {
 
 #include "modules.h"
 
-
-// static const LUA_REG_TYPE flib[] =
-// {
-//   { LSTRKEY( "write" ),      LFUNCVAL( l_write  ) },
-//   { LSTRKEY( "read" ),      LFUNCVAL( l_read  ) },
-//   { LSTRKEY( "close" ),     LFUNCVAL( l_close ) },
-//   { LNILKEY, LNILVAL }
-// };
-
-// static const LUA_REG_TYPE iolib[] = {
-//   { LSTRKEY( "close"      ),            LFUNCVAL( l_close   ) },
-//   { LSTRKEY( "open"       ),            LFUNCVAL( io_open    ) },
-//   { LNILKEY, LNILVAL }
-// };
-
-// static int luaL_flib_index(lua_State *L) {
-//   int fres;
-//   if ((fres = luaR_findfunction(L, flib)) != 0)
-//     return fres;
-
-//   return (int)luaO_nilobject;
-// }
-
-// static int luaL_io_index(lua_State *L) {
-//   int fres;
-//   if ((fres = luaR_findfunction(L, iolib)) != 0)
-//     return fres;
-
-//   return (int)luaO_nilobject;
-// }
-
 static const LUA_REG_TYPE fops_maps[] = {
     { LSTRKEY( "write" ),           LFUNCVAL( l_write ) },
     { LSTRKEY( "read" ),            LFUNCVAL( l_read  ) },
@@ -187,15 +156,7 @@ static const LUA_REG_TYPE msgq_map[] = {
 
 
 int luaopen_msgq(lua_State *L) {
-    // luaL_newlib(L, io_load_funcs);  /* new module */
-    // lua_pushvalue(L, -1);
-    // lua_setmetatable(L, -2);
 
-    // luaL_newmetatable(L, LUA_MSGQHANDLE);  /* create metatable for file handles */
-    // lua_pushvalue(L, -1);  /* push metatable */
-    // lua_setfield(L, -2, "__index");  /* metatable.__index = metatable */
-    // luaL_setfuncs(L, flib_load_funcs, 0);  /* add file methods to new metatable */
-    // lua_pop(L, 1);  /* pop new metatable */
     luaL_newmetarotable(L, LUA_MSGQHANDLE, (void *)fops_maps);
 
     return 0;
