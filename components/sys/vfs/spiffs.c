@@ -1162,26 +1162,8 @@ int vfs_spiffs_mount(const char *target) {
     int retries = 0;
 
 
-    const esp_partition_t *running_partition = NULL;
-
-    running_partition = esp_ota_get_running_partition();
-    printf( "running partition subtype %d at offset 0x%x\n",
-             running_partition->subtype, running_partition->address);
-    assert(running_partition != NULL);
-
-    int spiffs_part;
-
-    if (running_partition->subtype == ESP_PARTITION_SUBTYPE_APP_OTA_0)
-        spiffs_part = LUA_RTOS_SPIFFS_PART;
-    else if (running_partition->subtype == ESP_PARTITION_SUBTYPE_APP_OTA_1)
-        spiffs_part = LUA_RTOS_SPIFFS_PART + LUA_RTOS_SPIFFS_PART_OFFSET;
-    else
-    {
-        printf("wrong OTA config\n");
-        assert(0);
-    }
     // Find partition
-    const esp_partition_t *partition = esp_partition_find_first(ESP_PARTITION_TYPE_DATA, spiffs_part, NULL);
+    const esp_partition_t *partition = esp_partition_find_first(ESP_PARTITION_TYPE_DATA, LUA_RTOS_SPIFFS_PART, NULL);
 
     if (!partition) {
         vfs_spiffs_free_resources();
