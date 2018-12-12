@@ -26,6 +26,9 @@
 
 #include "lauxlib.h"
 
+#include "esp_attr.h"
+#include "esp_heap_caps.h"
+
 #if LUA_USE_ROTABLE
 #include "lrotable.h"
 #endif
@@ -40,6 +43,34 @@
 #define LEVELS1	10	/* size of the first part of the stack */
 #define LEVELS2	11	/* size of the second part of the stack */
 
+
+IRAM_ATTR void *lua_malloc( size_t size )
+{
+#if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
+    return heap_caps_malloc_prefer(size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
+#else
+    return malloc(size);
+#endif
+}
+
+
+IRAM_ATTR void *lua_realloc( void *ptr, size_t size )
+{
+#if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
+    return heap_caps_realloc_prefer(ptr, size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
+#else
+    return realloc(ptr, size);
+#endif
+}
+
+IRAM_ATTR void *lua_calloc( size_t n, size_t size )
+{
+#if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
+    return heap_caps_calloc_prefer(n, size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
+#else
+    return calloc(n, size);
+#endif
+}
 
 
 /*
@@ -1030,10 +1061,10 @@ static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
 #if LUA_USE_ROTABLE
   if (ptr)
 #endif
-    return realloc(ptr, nsize);
+    return lua_realloc(ptr, nsize);
 #if LUA_USE_ROTABLE
   else {
-    ptr = malloc(nsize);
+    ptr = lua_malloc(nsize);
     return ptr;
   }
 #endif
