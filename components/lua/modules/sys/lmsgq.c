@@ -77,11 +77,7 @@ static int l_write(lua_State *L) {
     }
 
     msg_data = malloc(strlen(data) + 1);
-    if(!msg_data){
-        // return luaL_error(L, "write mem allocate error");
-        ESP_LOGE(TAG, "allocated mem for write failed");
-        lua_pushinteger(L, 0);
-    }else{
+    if(msg_data != NULL){
         memset((void *)msg_data, 0, strlen(data) + 1);
         strcpy(msg_data, data);
         msg.data = msg_data;
@@ -90,11 +86,13 @@ static int l_write(lua_State *L) {
 
         if(ret == 0){
             free(msg_data);
+        } else{
+            lua_pushvalue(L, 1);
+            return 1;
         }
-        
-        lua_pushinteger(L, ret);
     }
-    return 1;
+
+    return luaL_fileresult(L, 0, NULL);
 }
 
 

@@ -105,6 +105,7 @@ static int l_open(lua_State *L) {
 static int l_write(lua_State *L) {
     vfs_handler_t *p  = (vfs_handler_t *)luaL_checkudata(L, 1, LUA_LVGLHANDLE);
     const char* data = luaL_checkstring(L, 2);
+    lua_pushvalue(L, 1);
 
     if (!data) {
     		return luaL_error(L, "data missing");
@@ -112,8 +113,7 @@ static int l_write(lua_State *L) {
 
     int ret = write(p->fd, data, strlen(data));
 
-    lua_pushinteger(L, ret);
-    return 1;
+    return (ret > 0) ? 1 : luaL_fileresult(L, ret, NULL);
 }
 
 
