@@ -82,20 +82,20 @@ int __wrap__open_r(struct _reent *r, const char *path, int flags, int mode) {
 }
 
 int __wrap_open(const char *path, int flags, int mode) {
-    char *ppath;
+    // char *ppath;
     int res;
 
-    if (!path || !*path) {
-        errno = EFAULT;
-        return -1;
-    }
+    // if (!path || !*path) {
+    //     errno = EFAULT;
+    //     return -1;
+    // }
 
-    ppath = mount_resolve_to_physical(path);
-    if (ppath) {
-        res = __real_open(ppath, flags, mode);
-        free(ppath);
+    // ppath = mount_resolve_to_physical(path);
+    // if (ppath) {
+        res = __real_open(path, flags, mode);
+    //     free(ppath);
         return res;
-    } else {
-        return -1;
-    }
+    // } else {
+    //     return -1;
+    // }
 }

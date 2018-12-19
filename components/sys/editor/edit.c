@@ -2030,6 +2030,7 @@ void edit(struct editor *ed) {
 #ifdef LESS
         case KEY_ESC: done = 1; break;
 #else
+        case KEY_ESC: save_editor(ed); done = 1; break;
         case KEY_TAB: indent(ed, (unsigned char *)INDENT); break;
         case KEY_SHIFT_TAB: unindent(ed, (unsigned char *)INDENT); break;
 
