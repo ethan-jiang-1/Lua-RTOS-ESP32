@@ -4,6 +4,7 @@
 #include "esp_heap_caps.h"
 #include "freertos/task.h"
 #include "string.h"
+#include "sys/time.h"
 
 #if CONFIG_LUA_RTOS_LUA_USE_SYS
 
@@ -42,6 +43,18 @@ static int lget_taskinfo(lua_State *L) {
 
 #endif
 
+static int lget_time_ms(lua_State *L) {
+	struct timeval tv;
+	char buf[16] = {0};
+	gettimeofday(&tv, NULL);
+
+	unsigned long time_ms = (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
+	sprintf(buf, "%lu", time_ms);
+
+	lua_pushstring(L, buf);
+	return 1;
+}
+
 
 
 #include "modules.h"
@@ -50,6 +63,7 @@ static const LUA_REG_TYPE sys_map[] =
 {
   { LSTRKEY( "get_freemem" ),      LFUNCVAL( lget_freemem  ) },
   { LSTRKEY( "get_freeiram" ),      LFUNCVAL( lget_freeiram  ) },
+  { LSTRKEY( "get_time_ms" ),      LFUNCVAL( lget_time_ms  ) },
 #if ( ( configUSE_TRACE_FACILITY == 1 ) && ( configUSE_STATS_FORMATTING_FUNCTIONS > 0 ) )
   { LSTRKEY( "get_taskinfo" ),      LFUNCVAL( lget_taskinfo  ) },
 #endif
