@@ -44,7 +44,7 @@
 #define LEVELS2	11	/* size of the second part of the stack */
 
 
-IRAM_ATTR void *lua_malloc( size_t size )
+void *lua_malloc( size_t size )
 {
 #if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
     return heap_caps_malloc_prefer(size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
@@ -54,7 +54,7 @@ IRAM_ATTR void *lua_malloc( size_t size )
 }
 
 
-IRAM_ATTR void *lua_realloc( void *ptr, size_t size )
+void *lua_realloc( void *ptr, size_t size )
 {
 #if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
     return heap_caps_realloc_prefer(ptr, size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
@@ -63,7 +63,7 @@ IRAM_ATTR void *lua_realloc( void *ptr, size_t size )
 #endif
 }
 
-IRAM_ATTR void *lua_calloc( size_t n, size_t size )
+void *lua_calloc( size_t n, size_t size )
 {
 #if CONFIG_LUA_ALLOCATION_FROM_SPIRAM_FIRST
     return heap_caps_calloc_prefer(n, size, 2, MALLOC_CAP_DEFAULT|MALLOC_CAP_SPIRAM, MALLOC_CAP_DEFAULT|MALLOC_CAP_INTERNAL);
