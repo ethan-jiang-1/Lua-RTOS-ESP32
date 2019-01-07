@@ -200,7 +200,7 @@ int vfs_fat_mount(const char *target) {
 
 	syslog(LOG_INFO, "sd name %s", card->cid.name);
 	syslog(LOG_INFO, "sd type %s", (card->ocr & SD_OCR_SDHC_CAP)?"SDHC/SDXC":"SDSC");
-	syslog(LOG_INFO, "sd working at %s", (card->csd.tr_speed > 25000000)?"high speed":"default speed");
+	syslog(LOG_INFO, "sd working at %s : %d", (card->csd.tr_speed > 25000000)?"high speed":"default speed", card->csd.tr_speed);
 	syslog(LOG_INFO, "sd size %.2f GB",
 		((((double)card->csd.capacity) * ((double)card->csd.sector_size)) / 1073741824.0)
 	);
