@@ -1365,6 +1365,10 @@ menu "Lua RTOS"
             config LUA_RTOS_LUA_USE_PACKAGE
                bool "Include package module in build"
                default y
+
+            config LUA_RTOS_LUA_USE_BIT32
+               bool "Include bit32 module in build"
+               default y
          endmenu
          menu "Lua RTOS Modules"    
             config LUA_RTOS_LUA_USE_FS
