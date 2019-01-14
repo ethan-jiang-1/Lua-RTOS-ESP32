@@ -4,9 +4,16 @@
 #include "esp_heap_caps.h"
 #include "freertos/task.h"
 #include "string.h"
+#include <sys/unistd.h>
+#include <errno.h>
 #include "sys/time.h"
-
 #include "esp_log.h"
+#include "driver/sdmmc_host.h"
+#include "driver/sdmmc_defs.h"
+#include "sdmmc_cmd.h"
+#include "diskio.h"
+#include "esp_vfs.h"
+#include "esp_vfs_fat.h"
 
 #if CONFIG_LUA_RTOS_LUA_USE_SYS
 
@@ -63,7 +70,7 @@ static int lget_sd_read_perf(lua_State *L) {
 
 	struct timeval tv;
 	char* buff;
-	int read_size = 4096;
+	int read_size = 4*1024;
 
 	unsigned long time_ms_start;
 	unsigned long time_ms_stop;
@@ -82,7 +89,7 @@ static int lget_sd_read_perf(lua_State *L) {
 			gettimeofday(&tv, NULL);
 			time_ms_start = (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
 			while(1){
-				int n = fread(buff, 1, read_size, f);
+				int n = read(fileno(f), buff, read_size);
 				total_size += n;
 				if(n < read_size)
 					break;
@@ -107,6 +114,7 @@ static int lget_sd_read_perf(lua_State *L) {
 
 static int lget_sd_write_perf(lua_State *L) {
 	const char* file_name = luaL_checkstring(L, 1);
+	int mode = luaL_checknumber(L, 2);
 
 	struct timeval tv;
 	char* buff;
@@ -120,13 +128,16 @@ static int lget_sd_write_perf(lua_State *L) {
 	FILE * f = fopen(file_name, "wb");
 
 	if (f != NULL){
-		buff = heap_caps_malloc(write_size, MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
+		if(mode == 0)
+			buff = heap_caps_malloc(write_size, MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
+		else
+			buff = heap_caps_malloc(write_size, MALLOC_CAP_SPIRAM|MALLOC_CAP_8BIT);
 
 		if(buff != NULL){
 			gettimeofday(&tv, NULL);
 			time_ms_start = (tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL));
 			while(total_size < 20*1024*1024){
-				int n = fwrite(buff, 1, write_size, f);
+				int n = write(fileno(f), buff, write_size);
 				total_size += n;
 			}
 

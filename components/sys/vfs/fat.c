@@ -109,6 +109,7 @@ int vfs_fat_mount(const char *target) {
 
 #if CONFIG_SD_CARD_MMC
     sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+    host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
     sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 
     slot_config.gpio_cd = CONFIG_LUA_RTOS_MCC_CD;
@@ -176,6 +177,7 @@ int vfs_fat_mount(const char *target) {
 
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
+        .allocation_unit_size = 64 * 1024,
         .max_files = 5
     };
 
